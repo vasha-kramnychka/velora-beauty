@@ -9,7 +9,407 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="velora.css?v=4" />
+  <style>
+:root{
+  --bg:#fbf7f4;
+  --card:#fffdfb;
+  --text:#2d2324;
+  --muted:#7d6d6d;
+  --rose:#b9837f;
+  --rose-dark:#8e5d59;
+  --rose-soft:#ead4cf;
+  --cream:#f3e7df;
+  --line:#eadfda;
+  --shadow:0 18px 55px rgba(83,53,50,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"DM Sans",Arial,sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  line-height:1.5;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.container{width:min(1180px,calc(100% - 36px));margin:0 auto}
+
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(251,247,244,.90);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(234,223,218,.85)
+}
+.header-inner{height:82px;display:flex;align-items:center;gap:28px}
+.brand,.brand-button{display:inline-flex;align-items:center;gap:12px}
+.brand-button{background:transparent;border:0;padding:0;text-align:left;color:inherit}
+.brand-mark{
+  width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;background:var(--text);color:#fff;
+  font-family:"Playfair Display",serif;font-size:22px;font-weight:700
+}
+.brand strong{display:block;font-family:"Playfair Display",serif;letter-spacing:.04em;font-size:26px;line-height:1}
+.brand small{display:block;letter-spacing:.38em;font-size:9px;margin-top:5px;color:var(--muted)}
+
+.desktop-nav{display:flex;gap:22px;margin-left:auto}
+.desktop-nav button{
+  border:0;background:transparent;font-weight:700;color:#5f5050;padding:8px 4px
+}
+.desktop-nav button:hover{color:var(--rose-dark)}
+
+.cart-button{
+  border:0;border-radius:999px;padding:11px 16px;background:var(--text);color:#fff;
+  display:flex;align-items:center;gap:8px;font-weight:700
+}
+.cart-button b{
+  min-width:23px;height:23px;padding:0 6px;display:grid;place-items:center;
+  border-radius:999px;background:var(--rose);font-size:12px
+}
+
+.view{display:none}
+.view.active{display:block}
+
+.hero{
+  min-height:620px;margin-top:26px;padding:68px;border-radius:36px;
+  background:
+    radial-gradient(circle at 82% 25%,rgba(255,255,255,.92),transparent 27%),
+    linear-gradient(135deg,#f7ede8 0%,#efe0da 50%,#f9f3ef 100%);
+  display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;
+  overflow:hidden;position:relative
+}
+.eyebrow{
+  color:var(--rose-dark);text-transform:uppercase;
+  letter-spacing:.15em;font-size:12px;font-weight:800
+}
+.hero h1,.page-title,.section h2,.drawer-head h2,.modal-card h2,.delivery-box h2{
+  font-family:"Playfair Display",serif;line-height:1.02
+}
+.hero h1{font-size:clamp(48px,6vw,78px);margin:12px 0 18px;max-width:700px}
+.hero h1 em{font-style:italic;color:var(--rose-dark)}
+.hero-copy p{font-size:19px;color:var(--muted);max-width:650px;margin:0 0 28px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.primary-btn,.secondary-btn{
+  border:0;border-radius:14px;padding:15px 20px;
+  font-weight:800;display:inline-flex;justify-content:center;align-items:center
+}
+.primary-btn{background:var(--text);color:#fff}
+.primary-btn:hover{background:var(--rose-dark)}
+.secondary-btn{background:rgba(255,255,255,.75);border:1px solid var(--line)}
+.hero-points{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;color:#6d5f5f;font-size:13px}
+
+.hero-visual{height:440px;position:relative}
+.beauty-card{
+  position:absolute;width:150px;height:190px;border-radius:28px;
+  display:grid;place-items:center;font-size:64px;background:rgba(255,255,255,.83);
+  box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.7)
+}
+.card-a{left:8%;top:10%;transform:rotate(-7deg)}
+.card-b{right:10%;top:7%;transform:rotate(7deg)}
+.card-c{left:26%;bottom:7%;transform:rotate(5deg)}
+.card-d{right:1%;bottom:10%;transform:rotate(-4deg)}
+.hero-badge{
+  position:absolute;left:39%;top:35%;width:150px;height:150px;border-radius:50%;
+  background:var(--text);color:#fff;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;box-shadow:var(--shadow);text-align:center
+}
+.hero-badge span{font-family:"Playfair Display",serif;font-size:24px}
+.hero-badge small{font-size:9px;letter-spacing:.12em;margin-top:5px;color:#ead4cf}
+
+.section{padding:78px 0}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:30px}
+.section h2{font-size:44px;margin:10px 0 0}
+.home-feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.home-feature-grid article{
+  background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px
+}
+.home-feature-grid span{color:var(--rose-dark);font-size:12px;font-weight:800}
+.home-feature-grid strong{display:block;font-family:"Playfair Display",serif;font-size:22px;margin-top:24px}
+.home-feature-grid p{color:var(--muted);font-size:14px;margin-bottom:0}
+
+.page-shell{padding:54px 0 78px;min-height:680px}
+.page-top,.category-header{
+  display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:32px
+}
+.page-title{font-size:54px;margin:9px 0 10px}
+.page-subtitle{max-width:650px;color:var(--muted);font-size:16px;margin:0}
+
+.breadcrumbs{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  color:var(--muted);font-size:13px;margin-bottom:24px
+}
+.breadcrumbs button{
+  border:0;background:transparent;padding:0;color:var(--rose-dark);font-weight:700
+}
+.breadcrumbs strong{color:var(--text)}
+
+.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.catalog-category-grid{margin-top:24px}
+.category-card{
+  border:1px solid var(--line);background:var(--card);border-radius:24px;
+  padding:26px;text-align:left;transition:.2s ease;min-height:180px;
+  display:flex;flex-direction:column
+}
+.category-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--rose-soft)}
+.category-icon{font-size:38px;display:block;margin-bottom:30px}
+.category-card strong{display:block;font-family:"Playfair Display",serif;font-size:25px}
+.category-card small{display:block;color:var(--muted);margin-top:7px}
+.category-arrow{margin-top:auto;padding-top:24px;color:var(--rose-dark);font-weight:800}
+
+.search-wrap{
+  width:min(360px,100%);height:48px;border:1px solid var(--line);border-radius:14px;
+  background:#fff;display:flex;align-items:center;padding:0 14px;gap:8px
+}
+.search-wrap input{border:0;outline:0;background:transparent;width:100%}
+
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.product-card{
+  border:1px solid var(--line);border-radius:22px;background:#fff;overflow:hidden;
+  display:flex;flex-direction:column;transition:.2s ease;position:relative
+}
+.product-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.product-card-main{border:0;background:transparent;padding:0;text-align:left;color:inherit}
+.product-image{
+  height:220px;display:grid;place-items:center;font-size:76px;
+  background:linear-gradient(145deg,#f8eeea,#f3e1dc);overflow:hidden
+}
+.product-image img{width:100%;height:100%;object-fit:cover;display:block}
+.product-body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.product-category{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--rose-dark);font-weight:800}
+.product-name{font-family:"Playfair Display",serif;font-size:21px;line-height:1.15}
+.product-desc{color:var(--muted);font-size:13px;min-height:40px}
+.product-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+.price-wrap{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price{font-weight:800;font-size:20px}
+.old-price{color:var(--muted);text-decoration:line-through;font-size:13px}
+.add-btn{
+  width:42px;height:42px;border-radius:50%;border:0;background:var(--text);
+  color:#fff;font-size:22px;flex:0 0 auto
+}
+.add-btn:hover{background:var(--rose-dark)}
+.sale-badge{
+  position:absolute;top:12px;left:12px;z-index:2;background:var(--rose-dark);
+  color:#fff;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:800;
+  letter-spacing:.07em;text-transform:uppercase
+}
+.empty-state{text-align:center;color:var(--muted);padding:50px 0}
+
+.product-detail{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+  background:#fff;border:1px solid var(--line);border-radius:30px;padding:34px
+}
+.product-detail-media{
+  min-height:500px;border-radius:24px;background:linear-gradient(145deg,#f8eeea,#f3e1dc);
+  overflow:hidden;display:grid;place-items:center;font-size:120px
+}
+.product-detail-media img{width:100%;height:100%;object-fit:cover;display:block}
+.product-detail-copy{padding:14px 8px;display:flex;flex-direction:column}
+.product-detail-copy h1{
+  font-family:"Playfair Display",serif;font-size:52px;line-height:1.05;margin:10px 0 18px
+}
+.product-detail-copy .detail-desc{color:var(--muted);font-size:16px;line-height:1.75}
+.product-detail-price{display:flex;gap:12px;align-items:baseline;margin:18px 0 24px}
+.product-detail-price .price{font-size:30px}
+.detail-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:auto}
+.detail-actions .primary-btn{min-width:220px}
+.back-btn{
+  border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px 18px;font-weight:800
+}
+
+.delivery-box{
+  border-radius:30px;background:var(--text);color:#fff;padding:48px;
+  display:grid;grid-template-columns:.9fr 1.1fr;gap:45px
+}
+.standalone-delivery{margin-top:14px}
+.delivery-box .eyebrow{color:#e3bab6}
+.delivery-box h2{font-size:44px;margin:10px 0 14px}
+.delivery-box p{color:#d9cece;max-width:430px}
+.delivery-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.delivery-steps article{padding:22px;border-radius:20px;background:rgba(255,255,255,.07)}
+.delivery-steps b{display:block;color:#d9aaa6;font-size:12px;margin-bottom:28px}
+.delivery-steps strong{display:block;font-family:"Playfair Display",serif;font-size:21px}
+.delivery-steps span{display:block;color:#d8cccc;font-size:13px;margin-top:6px}
+
+.site-footer{border-top:1px solid var(--line);padding:26px 0 95px}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.footer-inner p{color:var(--muted);font-size:13px}
+.footer-brand .brand-mark{width:38px;height:38px}
+.footer-brand strong{font-size:20px}
+
+.mobile-nav{
+  display:none;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);
+  width:min(520px,calc(100% - 24px));z-index:60;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;
+  box-shadow:var(--shadow);padding:8px
+}
+.mobile-nav button{
+  flex:1;border:0;background:transparent;display:flex;flex-direction:column;
+  align-items:center;gap:2px;color:#655656;position:relative
+}
+.mobile-nav span{font-size:20px}.mobile-nav small{font-size:10px}
+.mobile-nav b{
+  position:absolute;top:-2px;right:18%;width:18px;height:18px;border-radius:50%;
+  background:var(--rose-dark);color:#fff;font-size:10px;display:grid;place-items:center
+}
+
+.overlay{position:fixed;inset:0;background:rgba(35,26,27,.38);z-index:80;backdrop-filter:blur(3px)}
+.cart-drawer{
+  position:fixed;right:0;top:0;height:100dvh;width:min(460px,100%);
+  background:#fff;z-index:90;transform:translateX(105%);transition:.28s ease;
+  display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(0,0,0,.12)
+}
+.cart-drawer.open{transform:translateX(0)}
+.drawer-head{padding:25px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:start}
+.drawer-head h2{font-size:34px;margin:6px 0 0}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:24px}
+.cart-items{padding:16px 22px;overflow:auto;flex:1}
+.cart-row{
+  display:grid;grid-template-columns:58px 1fr auto;gap:12px;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--line)
+}
+.cart-thumb{
+  width:58px;height:58px;border-radius:14px;display:grid;place-items:center;
+  background:var(--cream);font-size:28px;overflow:hidden
+}
+.cart-thumb img{width:100%;height:100%;object-fit:cover}
+.cart-row strong{display:block;font-size:14px}
+.cart-row small{color:var(--muted)}
+.qty{display:flex;align-items:center;gap:8px;margin-top:7px}
+.qty button{width:24px;height:24px;border:1px solid var(--line);background:#fff;border-radius:7px}
+.remove-btn{border:0;background:transparent;color:#a16c67;font-size:12px}
+.cart-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px;color:var(--muted)
+}
+.cart-empty span{font-size:44px}.cart-empty strong{color:var(--text);margin-top:10px}
+.cart-summary{padding:20px 24px;border-top:1px solid var(--line);background:#fff}
+.cart-summary>div{display:flex;justify-content:space-between;font-size:19px;margin-bottom:15px}
+.full{width:100%}
+
+.modal{
+  position:fixed;inset:0;z-index:100;display:none;place-items:center;
+  background:rgba(35,26,27,.48);padding:18px
+}
+.modal.open{display:grid}
+.modal-card{
+  width:min(540px,100%);max-height:92dvh;overflow:auto;
+  background:#fff;border-radius:28px;padding:30px;position:relative
+}
+.modal-close{position:absolute;right:18px;top:18px}
+.modal-card h2{font-size:36px;margin:10px 0 12px}
+.modal-subtitle{color:var(--muted)}
+#checkoutForm{display:grid;gap:13px;margin-top:22px}
+#checkoutForm label{display:grid;gap:6px;font-size:13px;font-weight:700}
+#checkoutForm input,#checkoutForm select,#checkoutForm textarea{
+  width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;outline:none;background:#fff
+}
+#checkoutForm input:focus,#checkoutForm select:focus,#checkoutForm textarea:focus{border-color:var(--rose)}
+
+.toast{
+  position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);
+  background:var(--text);color:#fff;border-radius:999px;padding:11px 16px;
+  z-index:120;opacity:0;pointer-events:none;transition:.25s
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:980px){
+  .hero{grid-template-columns:1fr;padding:46px;min-height:auto}
+  .hero-visual{height:370px}
+  .product-grid{grid-template-columns:repeat(2,1fr)}
+  .category-grid{grid-template-columns:repeat(2,1fr)}
+  .product-detail{grid-template-columns:1fr}
+  .product-detail-media{min-height:420px}
+  .delivery-box{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .desktop-nav,.cart-button{display:none}
+  .header-inner{height:70px}
+  .brand strong{font-size:22px}
+  .mobile-nav{display:flex}
+  .hero{margin-top:14px;padding:34px 24px;border-radius:26px}
+  .hero h1{font-size:48px}
+  .hero-copy p{font-size:16px}
+  .hero-visual{height:320px}
+  .beauty-card{width:112px;height:142px;font-size:48px}
+  .hero-badge{width:116px;height:116px;left:36%;top:36%}
+  .home-feature-grid{grid-template-columns:1fr}
+  .page-shell{padding-top:34px}
+  .page-top,.category-header{align-items:stretch;flex-direction:column}
+  .search-wrap{width:100%}
+  .page-title{font-size:44px}
+  .delivery-steps{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:520px){
+  .container{width:min(100% - 24px,1180px)}
+  .hero{padding:28px 18px}
+  .hero h1{font-size:40px}
+  .hero-actions{flex-direction:column}
+  .hero-actions button{width:100%}
+  .hero-points{display:grid;gap:6px}
+  .hero-visual{height:260px}
+  .beauty-card{width:90px;height:116px;font-size:40px;border-radius:20px}
+  .card-a{left:0}.card-b{right:0}.card-c{left:18%}.card-d{right:0}
+  .hero-badge{width:96px;height:96px;left:38%;top:36%}
+  .hero-badge span{font-size:18px}
+  .category-grid,.product-grid{grid-template-columns:1fr}
+  .category-card{min-height:150px}
+  .product-image{height:210px}
+  .product-detail{padding:18px;border-radius:24px}
+  .product-detail-media{min-height:300px}
+  .product-detail-copy h1{font-size:40px}
+  .delivery-box{padding:30px 22px}
+}
+
+
+/* v3: force polished navigation and breadcrumb styling */
+.desktop-nav button,
+.breadcrumbs button,
+.brand-button,
+.mobile-nav button {
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+}
+.breadcrumbs button{
+  padding:4px 0;
+  border:0;
+  background:transparent;
+  border-radius:0;
+}
+.breadcrumbs button:hover{
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+.category-card{
+  appearance:none;
+  -webkit-appearance:none;
+  color:var(--text);
+}
+
+
+/* v4: catalog back button */
+.page-back-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.72);
+  color:var(--rose-dark);
+  border-radius:999px;
+  padding:10px 16px;
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:22px;
+  transition:.2s ease;
+}
+.page-back-btn:hover{
+  background:#fff;
+  transform:translateX(-2px);
+  box-shadow:0 8px 24px rgba(83,53,50,.08);
+}
+
+  </style>
 </head>
 <body>
 
@@ -272,7 +672,613 @@
   </div>
 
   <div class="toast" id="toast">Готово</div>
+  <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxz7XLbPCSoNRd7j3AAUbSFysFsBh0L5ulqxdc6svRmPIFxeFKriItS9xG86nnUYZA/exec";
 
-  <script src="velora.js?v=4"></script>
+let products = [];
+let categories = [];
+let cart = JSON.parse(localStorage.getItem("veloraCart") || "{}");
+let currentCategory = "";
+let currentProductId = null;
+
+const views = {
+  home: document.getElementById("view-home"),
+  catalog: document.getElementById("view-catalog"),
+  category: document.getElementById("view-category"),
+  product: document.getElementById("view-product"),
+  delivery: document.getElementById("view-delivery")
+};
+
+const categoryGrid = document.getElementById("categoryGrid");
+const categoryEmpty = document.getElementById("categoryEmpty");
+const productGrid = document.getElementById("productGrid");
+const productEmpty = document.getElementById("productEmpty");
+const searchInput = document.getElementById("searchInput");
+const categoryTitle = document.getElementById("categoryTitle");
+const categoryDescription = document.getElementById("categoryDescription");
+const breadcrumbCategory = document.getElementById("breadcrumbCategory");
+const productDetail = document.getElementById("productDetail");
+const productCategoryBack = document.getElementById("productCategoryBack");
+const productBreadcrumb = document.getElementById("productBreadcrumb");
+
+const cartButton = document.getElementById("cartButton");
+const mobileCartButton = document.getElementById("mobileCartButton");
+const cartDrawer = document.getElementById("cartDrawer");
+const closeCart = document.getElementById("closeCart");
+const overlay = document.getElementById("overlay");
+const cartItems = document.getElementById("cartItems");
+const cartEmpty = document.getElementById("cartEmpty");
+const cartCount = document.getElementById("cartCount");
+const mobileCartCount = document.getElementById("mobileCartCount");
+const cartTotal = document.getElementById("cartTotal");
+
+const checkoutButton = document.getElementById("checkoutButton");
+const checkoutModal = document.getElementById("checkoutModal");
+const closeCheckout = document.getElementById("closeCheckout");
+const checkoutForm = document.getElementById("checkoutForm");
+const toast = document.getElementById("toast");
+
+function safeText(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatPrice(value) {
+  return new Intl.NumberFormat("uk-UA").format(Number(value) || 0) + " грн";
+}
+
+function isYes(value) {
+  const v = String(value ?? "").trim().toLowerCase();
+  return ["так", "true", "1", "yes", "y"].includes(v);
+}
+
+function normalizeImageUrl(url) {
+  if (!url) return "";
+  const value = String(url).trim();
+
+  const driveMatch =
+    value.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+    value.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+
+  if (driveMatch) {
+    return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1400`;
+  }
+
+  return value;
+}
+
+function normalizeProduct(p) {
+  return {
+    id: String(p.id ?? ""),
+    name: String(p.name ?? ""),
+    category: String(p.category ?? ""),
+    price: Number(p.price) || 0,
+    salePrice: Number(p.salePrice) || 0,
+    oldPrice: Number(p.oldPrice) || 0,
+    sale: p.sale,
+    description: String(p.description ?? ""),
+    image: normalizeImageUrl(p.image)
+  };
+}
+
+function categoryIcon(name) {
+  const map = {
+    "Обличчя":"🫧",
+    "Макіяж":"💄",
+    "Волосся":"🪮",
+    "Тіло":"🌿",
+    "Парфуми":"🌸",
+    "Набори":"🎁"
+  };
+  return map[name] || "✨";
+}
+
+function getProductPrice(p) {
+  return isYes(p.sale) && p.salePrice > 0 ? p.salePrice : p.price;
+}
+
+function getOldPrice(p) {
+  const current = getProductPrice(p);
+  if (p.oldPrice > current) return p.oldPrice;
+  if (isYes(p.sale) && p.salePrice > 0 && p.price > p.salePrice) return p.price;
+  return 0;
+}
+
+function findProduct(id) {
+  return products.find(p => String(p.id) === String(id));
+}
+
+function findCategory(name) {
+  return categories.find(c => String(c.name) === String(name));
+}
+
+function setView(name) {
+  Object.values(views).forEach(v => v.classList.remove("active"));
+  if (views[name]) views[name].classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function routeTo(name) {
+  if (name === "home") {
+    currentCategory = "";
+    currentProductId = null;
+    setView("home");
+    history.pushState({view:"home"}, "", "#home");
+    return;
+  }
+
+  if (name === "catalog") {
+    currentProductId = null;
+    setView("catalog");
+    renderCategories();
+    history.pushState({view:"catalog"}, "", "#catalog");
+    return;
+  }
+
+  if (name === "delivery") {
+    setView("delivery");
+    history.pushState({view:"delivery"}, "", "#delivery");
+    return;
+  }
+}
+
+function openCategory(name, push=true) {
+  currentCategory = name;
+  currentProductId = null;
+  searchInput.value = "";
+
+  const c = findCategory(name);
+  categoryTitle.textContent = name;
+  breadcrumbCategory.textContent = name;
+  categoryDescription.textContent = c?.description || "";
+  productCategoryBack.textContent = name;
+
+  renderProducts();
+  setView("category");
+
+  if (push) {
+    history.pushState({view:"category", category:name}, "", "#category=" + encodeURIComponent(name));
+  }
+}
+
+function openProduct(id, push=true) {
+  const p = findProduct(id);
+  if (!p) return;
+
+  currentProductId = String(id);
+  currentCategory = p.category;
+  productCategoryBack.textContent = p.category;
+  productBreadcrumb.textContent = p.name;
+
+  const price = getProductPrice(p);
+  const oldPrice = getOldPrice(p);
+
+  const media = p.image
+    ? `<div class="product-detail-media"><img src="${safeText(p.image)}" alt="${safeText(p.name)}" onerror="this.parentElement.innerHTML='${categoryIcon(p.category)}'"></div>`
+    : `<div class="product-detail-media">${categoryIcon(p.category)}</div>`;
+
+  productDetail.innerHTML = `
+    ${media}
+    <div class="product-detail-copy">
+      <span class="eyebrow">${safeText(p.category)}</span>
+      <h1>${safeText(p.name)}</h1>
+
+      <div class="product-detail-price">
+        <span class="price">${formatPrice(price)}</span>
+        ${oldPrice ? `<span class="old-price">${formatPrice(oldPrice)}</span>` : ""}
+      </div>
+
+      <p class="detail-desc">${safeText(p.description || "Опис товару буде додано найближчим часом.")}</p>
+
+      <div class="detail-actions">
+        <button class="primary-btn" type="button" data-detail-add="${safeText(p.id)}">Додати в кошик</button>
+        <button class="back-btn" type="button" data-back-category="${safeText(p.category)}">← Назад до категорії</button>
+      </div>
+    </div>
+  `;
+
+  setView("product");
+
+  if (push) {
+    history.pushState({view:"product", id:String(id)}, "", "#product=" + encodeURIComponent(String(id)));
+  }
+}
+
+async function loadStore() {
+  categoryEmpty.hidden = false;
+  categoryEmpty.textContent = "Завантажуємо категорії…";
+
+  try {
+    const response = await fetch(`${API_URL}?action=store`, {
+      method:"GET",
+      cache:"no-store"
+    });
+
+    if (!response.ok) throw new Error("Помилка завантаження");
+
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Помилка API");
+
+    products = (data.products || []).map(normalizeProduct);
+    categories = data.categories || [];
+
+    renderCategories();
+    renderCart();
+    restoreRouteFromHash();
+  } catch (error) {
+    console.error(error);
+    categoryEmpty.hidden = false;
+    categoryEmpty.textContent = "Не вдалося завантажити каталог. Перевірте підключення до Google Таблиці.";
+    showToast("Помилка завантаження каталогу");
+  }
+}
+
+function renderCategories() {
+  if (!categories.length) {
+    categoryGrid.innerHTML = "";
+    categoryEmpty.hidden = false;
+    categoryEmpty.textContent = "У каталозі поки немає активних категорій.";
+    return;
+  }
+
+  categoryGrid.innerHTML = categories.map(c => `
+    <button class="category-card" type="button" data-category="${safeText(c.name)}">
+      <span class="category-icon">${safeText(c.icon || categoryIcon(c.name))}</span>
+      <strong>${safeText(c.name)}</strong>
+      <small>${safeText(c.description || "")}</small>
+      <span class="category-arrow">Переглянути товари →</span>
+    </button>
+  `).join("");
+
+  categoryEmpty.hidden = true;
+}
+
+function renderProducts() {
+  const q = searchInput.value.trim().toLowerCase();
+
+  const filtered = products.filter(p => {
+    const sameCategory = p.category === currentCategory;
+    const matchesQuery = !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q);
+
+    return sameCategory && matchesQuery;
+  });
+
+  productGrid.innerHTML = filtered.map(p => {
+    const price = getProductPrice(p);
+    const oldPrice = getOldPrice(p);
+    const onSale = isYes(p.sale) && p.salePrice > 0;
+
+    const imageHtml = p.image
+      ? `<div class="product-image"><img src="${safeText(p.image)}" alt="${safeText(p.name)}" loading="lazy" onerror="this.parentElement.innerHTML='${categoryIcon(p.category)}'"></div>`
+      : `<div class="product-image">${categoryIcon(p.category)}</div>`;
+
+    return `
+      <article class="product-card">
+        ${onSale ? '<span class="sale-badge">Акція</span>' : ''}
+
+        <button class="product-card-main" type="button" data-product="${safeText(p.id)}">
+          ${imageHtml}
+          <div class="product-body">
+            <span class="product-category">${safeText(p.category)}</span>
+            <strong class="product-name">${safeText(p.name)}</strong>
+            <p class="product-desc">${safeText(p.description)}</p>
+          </div>
+        </button>
+
+        <div class="product-body" style="padding-top:0">
+          <div class="product-bottom">
+            <div class="price-wrap">
+              <span class="price">${formatPrice(price)}</span>
+              ${oldPrice ? `<span class="old-price">${formatPrice(oldPrice)}</span>` : ""}
+            </div>
+            <button class="add-btn" data-add="${safeText(p.id)}" type="button">+</button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  productEmpty.hidden = filtered.length !== 0;
+
+  if (!filtered.length) {
+    productEmpty.textContent = q
+      ? "Нічого не знайдено в цій категорії."
+      : "У цій категорії поки немає активних товарів.";
+  }
+}
+
+function saveCart() {
+  localStorage.setItem("veloraCart", JSON.stringify(cart));
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  saveCart();
+  renderCart();
+  showToast("Додано в кошик");
+}
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id] += delta;
+  if (cart[id] <= 0) delete cart[id];
+  saveCart();
+  renderCart();
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  saveCart();
+  renderCart();
+}
+
+function cartSummary() {
+  let count = 0;
+  let total = 0;
+
+  for (const [id, qty] of Object.entries(cart)) {
+    const p = findProduct(id);
+    if (!p) continue;
+    count += Number(qty);
+    total += getProductPrice(p) * Number(qty);
+  }
+
+  return {count,total};
+}
+
+function renderCart() {
+  const entries = Object.entries(cart).filter(([id, qty]) => Number(qty) > 0 && findProduct(id));
+
+  cartItems.innerHTML = entries.map(([id, qty]) => {
+    const p = findProduct(id);
+
+    const thumb = p.image
+      ? `<img src="${safeText(p.image)}" alt="">`
+      : categoryIcon(p.category);
+
+    return `
+      <div class="cart-row">
+        <div class="cart-thumb">${thumb}</div>
+        <div>
+          <strong>${safeText(p.name)}</strong>
+          <small>${formatPrice(getProductPrice(p))}</small>
+          <div class="qty">
+            <button type="button" data-minus="${safeText(p.id)}">−</button>
+            <span>${Number(qty)}</span>
+            <button type="button" data-plus="${safeText(p.id)}">+</button>
+          </div>
+        </div>
+        <button class="remove-btn" type="button" data-remove="${safeText(p.id)}">Видалити</button>
+      </div>
+    `;
+  }).join("");
+
+  const {count,total} = cartSummary();
+  cartCount.textContent = count;
+  mobileCartCount.textContent = count;
+  cartTotal.textContent = formatPrice(total);
+
+  cartEmpty.style.display = entries.length ? "none" : "flex";
+  cartItems.style.display = entries.length ? "block" : "none";
+  checkoutButton.disabled = entries.length === 0;
+  checkoutButton.style.opacity = entries.length ? "1" : ".5";
+}
+
+function openCart() {
+  cartDrawer.classList.add("open");
+  cartDrawer.setAttribute("aria-hidden","false");
+  overlay.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeCartDrawer() {
+  cartDrawer.classList.remove("open");
+  cartDrawer.setAttribute("aria-hidden","true");
+  overlay.hidden = true;
+  document.body.style.overflow = "";
+}
+
+function openCheckout() {
+  if (!cartSummary().count) return;
+  closeCartDrawer();
+  checkoutModal.classList.add("open");
+  checkoutModal.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeCheckoutModal() {
+  checkoutModal.classList.remove("open");
+  checkoutModal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+function restoreRouteFromHash() {
+  const hash = window.location.hash || "#home";
+
+  if (hash.startsWith("#category=")) {
+    const name = decodeURIComponent(hash.split("=").slice(1).join("="));
+    if (findCategory(name)) {
+      openCategory(name, false);
+      return;
+    }
+  }
+
+  if (hash.startsWith("#product=")) {
+    const id = decodeURIComponent(hash.split("=").slice(1).join("="));
+    if (findProduct(id)) {
+      openProduct(id, false);
+      return;
+    }
+  }
+
+  if (hash === "#catalog") {
+    setView("catalog");
+    renderCategories();
+    return;
+  }
+
+  if (hash === "#delivery") {
+    setView("delivery");
+    return;
+  }
+
+  setView("home");
+}
+
+document.addEventListener("click", e => {
+  const route = e.target.closest("[data-route]");
+  if (route) {
+    routeTo(route.dataset.route);
+    return;
+  }
+
+  const category = e.target.closest("[data-category]");
+  if (category) {
+    openCategory(category.dataset.category);
+    return;
+  }
+
+  const product = e.target.closest("[data-product]");
+  if (product) {
+    openProduct(product.dataset.product);
+    return;
+  }
+
+  const add = e.target.closest("[data-add]");
+  if (add) {
+    addToCart(add.dataset.add);
+    return;
+  }
+
+  const detailAdd = e.target.closest("[data-detail-add]");
+  if (detailAdd) {
+    addToCart(detailAdd.dataset.detailAdd);
+    return;
+  }
+
+  const backCategory = e.target.closest("[data-back-category]");
+  if (backCategory) {
+    openCategory(backCategory.dataset.backCategory);
+  }
+});
+
+searchInput.addEventListener("input", renderProducts);
+
+productCategoryBack.addEventListener("click", () => {
+  if (currentCategory) openCategory(currentCategory);
+});
+
+cartItems.addEventListener("click", e => {
+  const minus = e.target.closest("[data-minus]");
+  const plus = e.target.closest("[data-plus]");
+  const remove = e.target.closest("[data-remove]");
+
+  if (minus) changeQty(minus.dataset.minus, -1);
+  if (plus) changeQty(plus.dataset.plus, 1);
+  if (remove) removeFromCart(remove.dataset.remove);
+});
+
+cartButton.addEventListener("click", openCart);
+mobileCartButton.addEventListener("click", openCart);
+closeCart.addEventListener("click", closeCartDrawer);
+overlay.addEventListener("click", closeCartDrawer);
+checkoutButton.addEventListener("click", openCheckout);
+closeCheckout.addEventListener("click", closeCheckoutModal);
+
+checkoutModal.addEventListener("click", e => {
+  if (e.target === checkoutModal) closeCheckoutModal();
+});
+
+checkoutForm.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const submitButton = checkoutForm.querySelector('button[type="submit"]');
+  const data = new FormData(checkoutForm);
+  const {total} = cartSummary();
+
+  const orderProducts = Object.entries(cart)
+    .map(([id, quantity]) => {
+      const p = findProduct(id);
+      if (!p) return null;
+      return {
+        id:p.id,
+        name:p.name,
+        quantity:Number(quantity),
+        price:getProductPrice(p)
+      };
+    })
+    .filter(Boolean);
+
+  const payload = {
+    action:"order",
+    name:data.get("name"),
+    phone:data.get("phone"),
+    city:data.get("city"),
+    delivery:data.get("delivery"),
+    comment:data.get("comment"),
+    products:orderProducts,
+    total
+  };
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Відправляємо…";
+
+  try {
+    const response = await fetch(API_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error("Помилка відправлення");
+
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error || "Помилка API");
+
+    cart = {};
+    saveCart();
+    renderCart();
+    checkoutForm.reset();
+    closeCheckoutModal();
+
+    showToast(
+      result.orderNumber
+        ? `Замовлення ${result.orderNumber} оформлено ✓`
+        : "Замовлення оформлено ✓"
+    );
+  } catch(error) {
+    console.error(error);
+    showToast("Не вдалося відправити замовлення");
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Підтвердити замовлення";
+  }
+});
+
+window.addEventListener("popstate", restoreRouteFromHash);
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    closeCartDrawer();
+    closeCheckoutModal();
+  }
+});
+
+loadStore();
+
+  </script>
 </body>
 </html>
