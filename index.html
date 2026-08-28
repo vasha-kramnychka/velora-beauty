@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#b9837f" />
+  <title>VELORA BEAUTY — косметика та догляд</title>
+  <meta name="description" content="VELORA BEAUTY — косметика, догляд за шкірою, волоссям і тілом. Зручно обирати, легко замовляти." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="VELORA BEAUTY">
+        <span class="brand-mark">V</span>
+        <span>
+          <strong>VELORA</strong>
+          <small>BEAUTY</small>
+        </span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Головна навігація">
+        <a href="#home">Головна</a>
+        <a href="#catalog">Каталог</a>
+        <a href="#delivery">Доставка</a>
+      </nav>
+
+      <button class="cart-button" id="cartButton" type="button" aria-label="Відкрити кошик">
+        <span>🛍️</span>
+        <span>Кошик</span>
+        <b id="cartCount">0</b>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow">Догляд • краса • турбота про себе</div>
+        <h1>Косметика, яка <em>підкреслює тебе</em></h1>
+        <p>Догляд за шкірою, волоссям і тілом, декоративна косметика та маленькі beauty-ритуали — в одному місці.</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#catalog">Перейти до каталогу</a>
+          <a class="secondary-btn" href="#categories">Обрати категорію</a>
+        </div>
+        <div class="hero-points">
+          <span>✓ Актуальний асортимент</span>
+          <span>✓ Швидке оформлення</span>
+          <span>✓ Зручна доставка</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="beauty-card card-a">🧴</div>
+        <div class="beauty-card card-b">💄</div>
+        <div class="beauty-card card-c">✨</div>
+        <div class="beauty-card card-d">🌸</div>
+        <div class="hero-badge">
+          <span>VELORA</span>
+          <small>your beauty ritual</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="categories">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Обирай своє</span>
+          <h2>Категорії</h2>
+        </div>
+      </div>
+
+      <div class="category-grid">
+        <button class="category-card" data-category="Обличчя" type="button">
+          <span class="category-icon">🫧</span>
+          <strong>Обличчя</strong>
+          <small>Очищення, креми, сироватки</small>
+        </button>
+        <button class="category-card" data-category="Макіяж" type="button">
+          <span class="category-icon">💄</span>
+          <strong>Макіяж</strong>
+          <small>Тон, губи, очі</small>
+        </button>
+        <button class="category-card" data-category="Волосся" type="button">
+          <span class="category-icon">🪮</span>
+          <strong>Волосся</strong>
+          <small>Шампуні, маски, догляд</small>
+        </button>
+        <button class="category-card" data-category="Тіло" type="button">
+          <span class="category-icon">🌿</span>
+          <strong>Тіло</strong>
+          <small>Креми, скраби, олії</small>
+        </button>
+        <button class="category-card" data-category="Парфуми" type="button">
+          <span class="category-icon">🌸</span>
+          <strong>Парфуми</strong>
+          <small>Аромати на кожен день</small>
+        </button>
+        <button class="category-card" data-category="Набори" type="button">
+          <span class="category-icon">🎁</span>
+          <strong>Набори</strong>
+          <small>Готові beauty-подарунки</small>
+        </button>
+      </div>
+    </section>
+
+    <section class="section catalog-section" id="catalog">
+      <div class="container">
+        <div class="section-head catalog-head">
+          <div>
+            <span class="eyebrow">VELORA selection</span>
+            <h2>Каталог</h2>
+          </div>
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Пошук товару..." autocomplete="off">
+          </div>
+        </div>
+
+        <div class="filters" id="filters">
+          <button class="filter active" type="button" data-filter="Усі">Усі</button>
+          <button class="filter" type="button" data-filter="Обличчя">Обличчя</button>
+          <button class="filter" type="button" data-filter="Макіяж">Макіяж</button>
+          <button class="filter" type="button" data-filter="Волосся">Волосся</button>
+          <button class="filter" type="button" data-filter="Тіло">Тіло</button>
+          <button class="filter" type="button" data-filter="Парфуми">Парфуми</button>
+          <button class="filter" type="button" data-filter="Набори">Набори</button>
+        </div>
+
+        <div class="product-grid" id="productGrid"></div>
+        <p class="empty-state" id="emptyState" hidden>Нічого не знайдено. Спробуйте інший запит.</p>
+      </div>
+    </section>
+
+    <section class="section container" id="delivery">
+      <div class="delivery-box">
+        <div>
+          <span class="eyebrow">Доставка та оплата</span>
+          <h2>Все просто</h2>
+          <p>Додавайте товари в кошик, залишайте контактні дані та обирайте зручний спосіб доставки.</p>
+        </div>
+        <div class="delivery-steps">
+          <article>
+            <b>01</b>
+            <strong>Оберіть</strong>
+            <span>Додайте потрібні товари в кошик.</span>
+          </article>
+          <article>
+            <b>02</b>
+            <strong>Оформіть</strong>
+            <span>Вкажіть ім’я, телефон і місто.</span>
+          </article>
+          <article>
+            <b>03</b>
+            <strong>Отримайте</strong>
+            <span>Підтвердимо замовлення та відправимо.</span>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="brand footer-brand">
+        <span class="brand-mark">V</span>
+        <span>
+          <strong>VELORA</strong>
+          <small>BEAUTY</small>
+        </span>
+      </div>
+      <p>© 2026 VELORA BEAUTY. Усі права захищені.</p>
+    </div>
+  </footer>
+
+  <nav class="mobile-nav" aria-label="Мобільна навігація">
+    <a href="#home"><span>⌂</span><small>Головна</small></a>
+    <a href="#catalog"><span>⌕</span><small>Каталог</small></a>
+    <a href="#delivery"><span>◇</span><small>Доставка</small></a>
+    <button id="mobileCartButton" type="button">
+      <span>🛍️</span><small>Кошик</small><b id="mobileCartCount">0</b>
+    </button>
+  </nav>
+
+  <div class="overlay" id="overlay" hidden></div>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <span class="eyebrow">Ваше замовлення</span>
+        <h2>Кошик</h2>
+      </div>
+      <button class="icon-btn" id="closeCart" type="button" aria-label="Закрити">×</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-empty" id="cartEmpty">
+      <span>🛍️</span>
+      <strong>Кошик поки порожній</strong>
+      <p>Додайте товари з каталогу.</p>
+    </div>
+
+    <div class="cart-summary">
+      <div><span>Разом</span><strong id="cartTotal">0 грн</strong></div>
+      <button class="primary-btn full" id="checkoutButton" type="button">Оформити замовлення</button>
+    </div>
+  </aside>
+
+  <div class="modal" id="checkoutModal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="icon-btn modal-close" id="closeCheckout" type="button" aria-label="Закрити">×</button>
+      <span class="eyebrow">Майже готово</span>
+      <h2>Оформлення замовлення</h2>
+      <p class="modal-subtitle">Заповніть дані — і ми підготуємо замовлення.</p>
+
+      <form id="checkoutForm">
+        <label>
+          Ім’я
+          <input name="name" required placeholder="Ваше ім’я">
+        </label>
+        <label>
+          Телефон
+          <input name="phone" required placeholder="+380..." inputmode="tel">
+        </label>
+        <label>
+          Місто
+          <input name="city" required placeholder="Наприклад, Хмельницький">
+        </label>
+        <label>
+          Доставка
+          <select name="delivery" required>
+            <option value="">Оберіть спосіб</option>
+            <option>Нова пошта</option>
+            <option>Укрпошта</option>
+            <option>Самовивіз</option>
+          </select>
+        </label>
+        <label>
+          Коментар
+          <textarea name="comment" rows="3" placeholder="Необов’язково"></textarea>
+        </label>
+        <button class="primary-btn full" type="submit">Підтвердити замовлення</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Готово</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
