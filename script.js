@@ -2,14 +2,29 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxz7XLbPCSoNRd7j3AAUbSF
 
 let products = [];
 let categories = [];
-let activeFilter = "Усі";
 let cart = JSON.parse(localStorage.getItem("veloraCart") || "{}");
+let currentCategory = "";
+let currentProductId = null;
 
-const productGrid = document.getElementById("productGrid");
+const views = {
+  home: document.getElementById("view-home"),
+  catalog: document.getElementById("view-catalog"),
+  category: document.getElementById("view-category"),
+  product: document.getElementById("view-product"),
+  delivery: document.getElementById("view-delivery")
+};
+
 const categoryGrid = document.getElementById("categoryGrid");
+const categoryEmpty = document.getElementById("categoryEmpty");
+const productGrid = document.getElementById("productGrid");
+const productEmpty = document.getElementById("productEmpty");
 const searchInput = document.getElementById("searchInput");
-const filters = document.getElementById("filters");
-const emptyState = document.getElementById("emptyState");
+const categoryTitle = document.getElementById("categoryTitle");
+const categoryDescription = document.getElementById("categoryDescription");
+const breadcrumbCategory = document.getElementById("breadcrumbCategory");
+const productDetail = document.getElementById("productDetail");
+const productCategoryBack = document.getElementById("productCategoryBack");
+const productBreadcrumb = document.getElementById("productBreadcrumb");
 
 const cartButton = document.getElementById("cartButton");
 const mobileCartButton = document.getElementById("mobileCartButton");
@@ -28,15 +43,6 @@ const closeCheckout = document.getElementById("closeCheckout");
 const checkoutForm = document.getElementById("checkoutForm");
 const toast = document.getElementById("toast");
 
-function formatPrice(value) {
-  return new Intl.NumberFormat("uk-UA").format(Number(value) || 0) + " грн";
-}
-
-function isYes(value) {
-  const v = String(value ?? "").trim().toLowerCase();
-  return ["так", "true", "1", "yes", "y"].includes(v);
-}
-
 function safeText(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -44,6 +50,15 @@ function safeText(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function formatPrice(value) {
+  return new Intl.NumberFormat("uk-UA").format(Number(value) || 0) + " грн";
+}
+
+function isYes(value) {
+  const v = String(value ?? "").trim().toLowerCase();
+  return ["так", "true", "1", "yes", "y"].includes(v);
 }
 
 function normalizeImageUrl(url) {
@@ -55,7 +70,7 @@ function normalizeImageUrl(url) {
     value.match(/[?&]id=([a-zA-Z0-9_-]+)/);
 
   if (driveMatch) {
-    return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1200`;
+    return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1400`;
   }
 
   return value;
@@ -75,6 +90,18 @@ function normalizeProduct(p) {
   };
 }
 
+function categoryIcon(name) {
+  const map = {
+    "Обличчя":"🫧",
+    "Макіяж":"💄",
+    "Волосся":"🪮",
+    "Тіло":"🌿",
+    "Парфуми":"🌸",
+    "Набори":"🎁"
+  };
+  return map[name] || "✨";
+}
+
 function getProductPrice(p) {
   return isYes(p.sale) && p.salePrice > 0 ? p.salePrice : p.price;
 }
@@ -86,29 +113,117 @@ function getOldPrice(p) {
   return 0;
 }
 
-function categoryFallbackIcon(name) {
-  const icons = {
-    "Обличчя":"🫧",
-    "Макіяж":"💄",
-    "Волосся":"🪮",
-    "Тіло":"🌿",
-    "Парфуми":"🌸",
-    "Набори":"🎁"
-  };
-  return icons[name] || "✨";
+function findProduct(id) {
+  return products.find(p => String(p.id) === String(id));
+}
+
+function findCategory(name) {
+  return categories.find(c => String(c.name) === String(name));
+}
+
+function setView(name) {
+  Object.values(views).forEach(v => v.classList.remove("active"));
+  if (views[name]) views[name].classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function routeTo(name) {
+  if (name === "home") {
+    currentCategory = "";
+    currentProductId = null;
+    setView("home");
+    history.pushState({view:"home"}, "", "#home");
+    return;
+  }
+
+  if (name === "catalog") {
+    currentProductId = null;
+    setView("catalog");
+    renderCategories();
+    history.pushState({view:"catalog"}, "", "#catalog");
+    return;
+  }
+
+  if (name === "delivery") {
+    setView("delivery");
+    history.pushState({view:"delivery"}, "", "#delivery");
+    return;
+  }
+}
+
+function openCategory(name, push=true) {
+  currentCategory = name;
+  currentProductId = null;
+  searchInput.value = "";
+
+  const c = findCategory(name);
+  categoryTitle.textContent = name;
+  breadcrumbCategory.textContent = name;
+  categoryDescription.textContent = c?.description || "";
+  productCategoryBack.textContent = name;
+
+  renderProducts();
+  setView("category");
+
+  if (push) {
+    history.pushState({view:"category", category:name}, "", "#category=" + encodeURIComponent(name));
+  }
+}
+
+function openProduct(id, push=true) {
+  const p = findProduct(id);
+  if (!p) return;
+
+  currentProductId = String(id);
+  currentCategory = p.category;
+  productCategoryBack.textContent = p.category;
+  productBreadcrumb.textContent = p.name;
+
+  const price = getProductPrice(p);
+  const oldPrice = getOldPrice(p);
+
+  const media = p.image
+    ? `<div class="product-detail-media"><img src="${safeText(p.image)}" alt="${safeText(p.name)}" onerror="this.parentElement.innerHTML='${categoryIcon(p.category)}'"></div>`
+    : `<div class="product-detail-media">${categoryIcon(p.category)}</div>`;
+
+  productDetail.innerHTML = `
+    ${media}
+    <div class="product-detail-copy">
+      <span class="eyebrow">${safeText(p.category)}</span>
+      <h1>${safeText(p.name)}</h1>
+
+      <div class="product-detail-price">
+        <span class="price">${formatPrice(price)}</span>
+        ${oldPrice ? `<span class="old-price">${formatPrice(oldPrice)}</span>` : ""}
+      </div>
+
+      <p class="detail-desc">${safeText(p.description || "Опис товару буде додано найближчим часом.")}</p>
+
+      <div class="detail-actions">
+        <button class="primary-btn" type="button" data-detail-add="${safeText(p.id)}">Додати в кошик</button>
+        <button class="back-btn" type="button" data-back-category="${safeText(p.category)}">← Назад до категорії</button>
+      </div>
+    </div>
+  `;
+
+  setView("product");
+
+  if (push) {
+    history.pushState({view:"product", id:String(id)}, "", "#product=" + encodeURIComponent(String(id)));
+  }
 }
 
 async function loadStore() {
-  emptyState.hidden = false;
-  emptyState.textContent = "Завантажуємо каталог…";
+  categoryEmpty.hidden = false;
+  categoryEmpty.textContent = "Завантажуємо категорії…";
 
   try {
     const response = await fetch(`${API_URL}?action=store`, {
-      method: "GET",
-      cache: "no-store"
+      method:"GET",
+      cache:"no-store"
     });
 
-    if (!response.ok) throw new Error("Не вдалося завантажити дані");
+    if (!response.ok) throw new Error("Помилка завантаження");
 
     const data = await response.json();
     if (!data.success) throw new Error(data.error || "Помилка API");
@@ -117,95 +232,94 @@ async function loadStore() {
     categories = data.categories || [];
 
     renderCategories();
-    renderProducts();
     renderCart();
+    restoreRouteFromHash();
   } catch (error) {
     console.error(error);
-    emptyState.hidden = false;
-    emptyState.textContent = "Не вдалося завантажити каталог. Перевірте підключення до Google Таблиці.";
+    categoryEmpty.hidden = false;
+    categoryEmpty.textContent = "Не вдалося завантажити каталог. Перевірте підключення до Google Таблиці.";
     showToast("Помилка завантаження каталогу");
   }
 }
 
 function renderCategories() {
-  const activeCategories = categories.filter(c => c && c.name);
+  if (!categories.length) {
+    categoryGrid.innerHTML = "";
+    categoryEmpty.hidden = false;
+    categoryEmpty.textContent = "У каталозі поки немає активних категорій.";
+    return;
+  }
 
-  categoryGrid.innerHTML = activeCategories.map(c => `
-    <button class="category-card" data-category="${safeText(c.name)}" type="button">
-      <span class="category-icon">${safeText(c.icon || categoryFallbackIcon(c.name))}</span>
+  categoryGrid.innerHTML = categories.map(c => `
+    <button class="category-card" type="button" data-category="${safeText(c.name)}">
+      <span class="category-icon">${safeText(c.icon || categoryIcon(c.name))}</span>
       <strong>${safeText(c.name)}</strong>
       <small>${safeText(c.description || "")}</small>
+      <span class="category-arrow">Переглянути товари →</span>
     </button>
   `).join("");
 
-  filters.innerHTML = [
-    `<button class="filter ${activeFilter === "Усі" ? "active" : ""}" type="button" data-filter="Усі">Усі</button>`,
-    ...activeCategories.map(c => `
-      <button class="filter ${activeFilter === c.name ? "active" : ""}" type="button" data-filter="${safeText(c.name)}">
-        ${safeText(c.name)}
-      </button>
-    `)
-  ].join("");
+  categoryEmpty.hidden = true;
 }
 
 function renderProducts() {
-  const query = searchInput.value.trim().toLowerCase();
+  const q = searchInput.value.trim().toLowerCase();
 
   const filtered = products.filter(p => {
-    const fitsCategory = activeFilter === "Усі" || p.category === activeFilter;
-    const fitsQuery = !query ||
-      p.name.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query) ||
-      p.description.toLowerCase().includes(query);
+    const sameCategory = p.category === currentCategory;
+    const matchesQuery = !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q);
 
-    return fitsCategory && fitsQuery;
+    return sameCategory && matchesQuery;
   });
 
   productGrid.innerHTML = filtered.map(p => {
-    const currentPrice = getProductPrice(p);
+    const price = getProductPrice(p);
     const oldPrice = getOldPrice(p);
     const onSale = isYes(p.sale) && p.salePrice > 0;
 
     const imageHtml = p.image
-      ? `<div class="product-image has-photo"><img src="${safeText(p.image)}" alt="${safeText(p.name)}" loading="lazy" onerror="this.parentElement.classList.remove('has-photo');this.parentElement.innerHTML='${categoryFallbackIcon(p.category)}';"></div>`
-      : `<div class="product-image">${categoryFallbackIcon(p.category)}</div>`;
+      ? `<div class="product-image"><img src="${safeText(p.image)}" alt="${safeText(p.name)}" loading="lazy" onerror="this.parentElement.innerHTML='${categoryIcon(p.category)}'"></div>`
+      : `<div class="product-image">${categoryIcon(p.category)}</div>`;
 
     return `
       <article class="product-card">
         ${onSale ? '<span class="sale-badge">Акція</span>' : ''}
-        ${imageHtml}
-        <div class="product-body">
-          <span class="product-category">${safeText(p.category)}</span>
-          <strong class="product-name">${safeText(p.name)}</strong>
-          <p class="product-desc">${safeText(p.description)}</p>
+
+        <button class="product-card-main" type="button" data-product="${safeText(p.id)}">
+          ${imageHtml}
+          <div class="product-body">
+            <span class="product-category">${safeText(p.category)}</span>
+            <strong class="product-name">${safeText(p.name)}</strong>
+            <p class="product-desc">${safeText(p.description)}</p>
+          </div>
+        </button>
+
+        <div class="product-body" style="padding-top:0">
           <div class="product-bottom">
             <div class="price-wrap">
-              <span class="price">${formatPrice(currentPrice)}</span>
+              <span class="price">${formatPrice(price)}</span>
               ${oldPrice ? `<span class="old-price">${formatPrice(oldPrice)}</span>` : ""}
             </div>
-            <button class="add-btn" data-add="${safeText(p.id)}" type="button" aria-label="Додати ${safeText(p.name)}">+</button>
+            <button class="add-btn" data-add="${safeText(p.id)}" type="button">+</button>
           </div>
         </div>
       </article>
     `;
   }).join("");
 
-  if (filtered.length) {
-    emptyState.hidden = true;
-  } else {
-    emptyState.hidden = false;
-    emptyState.textContent = products.length
-      ? "Нічого не знайдено. Спробуйте інший запит."
-      : "У каталозі поки немає активних товарів.";
+  productEmpty.hidden = filtered.length !== 0;
+
+  if (!filtered.length) {
+    productEmpty.textContent = q
+      ? "Нічого не знайдено в цій категорії."
+      : "У цій категорії поки немає активних товарів.";
   }
 }
 
 function saveCart() {
   localStorage.setItem("veloraCart", JSON.stringify(cart));
-}
-
-function findProduct(id) {
-  return products.find(item => String(item.id) === String(id));
 }
 
 function addToCart(id) {
@@ -240,19 +354,22 @@ function cartSummary() {
     total += getProductPrice(p) * Number(qty);
   }
 
-  return { count, total };
+  return {count,total};
 }
 
 function renderCart() {
-  const entries = Object.entries(cart).filter(([id, qty]) =>
-    Number(qty) > 0 && findProduct(id)
-  );
+  const entries = Object.entries(cart).filter(([id, qty]) => Number(qty) > 0 && findProduct(id));
 
   cartItems.innerHTML = entries.map(([id, qty]) => {
     const p = findProduct(id);
+
+    const thumb = p.image
+      ? `<img src="${safeText(p.image)}" alt="">`
+      : categoryIcon(p.category);
+
     return `
       <div class="cart-row">
-        <div class="cart-thumb">${categoryFallbackIcon(p.category)}</div>
+        <div class="cart-thumb">${thumb}</div>
         <div>
           <strong>${safeText(p.name)}</strong>
           <small>${formatPrice(getProductPrice(p))}</small>
@@ -267,10 +384,11 @@ function renderCart() {
     `;
   }).join("");
 
-  const { count, total } = cartSummary();
+  const {count,total} = cartSummary();
   cartCount.textContent = count;
   mobileCartCount.textContent = count;
   cartTotal.textContent = formatPrice(total);
+
   cartEmpty.style.display = entries.length ? "none" : "flex";
   cartItems.style.display = entries.length ? "block" : "none";
   checkoutButton.disabled = entries.length === 0;
@@ -279,30 +397,29 @@ function renderCart() {
 
 function openCart() {
   cartDrawer.classList.add("open");
-  cartDrawer.setAttribute("aria-hidden", "false");
+  cartDrawer.setAttribute("aria-hidden","false");
   overlay.hidden = false;
   document.body.style.overflow = "hidden";
 }
 
 function closeCartDrawer() {
   cartDrawer.classList.remove("open");
-  cartDrawer.setAttribute("aria-hidden", "true");
+  cartDrawer.setAttribute("aria-hidden","true");
   overlay.hidden = true;
   document.body.style.overflow = "";
 }
 
 function openCheckout() {
-  const { count } = cartSummary();
-  if (!count) return;
+  if (!cartSummary().count) return;
   closeCartDrawer();
   checkoutModal.classList.add("open");
-  checkoutModal.setAttribute("aria-hidden", "false");
+  checkoutModal.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
 }
 
 function closeCheckoutModal() {
   checkoutModal.classList.remove("open");
-  checkoutModal.setAttribute("aria-hidden", "true");
+  checkoutModal.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
 }
 
@@ -310,37 +427,84 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1900);
+  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
 }
 
-productGrid.addEventListener("click", e => {
-  const btn = e.target.closest("[data-add]");
-  if (btn) addToCart(btn.dataset.add);
-});
+function restoreRouteFromHash() {
+  const hash = window.location.hash || "#home";
 
-filters.addEventListener("click", e => {
-  const btn = e.target.closest("[data-filter]");
-  if (!btn) return;
+  if (hash.startsWith("#category=")) {
+    const name = decodeURIComponent(hash.split("=").slice(1).join("="));
+    if (findCategory(name)) {
+      openCategory(name, false);
+      return;
+    }
+  }
 
-  activeFilter = btn.dataset.filter;
-  document.querySelectorAll(".filter").forEach(el => el.classList.remove("active"));
-  btn.classList.add("active");
-  renderProducts();
-});
+  if (hash.startsWith("#product=")) {
+    const id = decodeURIComponent(hash.split("=").slice(1).join("="));
+    if (findProduct(id)) {
+      openProduct(id, false);
+      return;
+    }
+  }
 
-categoryGrid.addEventListener("click", e => {
-  const btn = e.target.closest("[data-category]");
-  if (!btn) return;
+  if (hash === "#catalog") {
+    setView("catalog");
+    renderCategories();
+    return;
+  }
 
-  activeFilter = btn.dataset.category;
-  document.querySelectorAll(".filter").forEach(el => {
-    el.classList.toggle("active", el.dataset.filter === activeFilter);
-  });
-  renderProducts();
-  document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
+  if (hash === "#delivery") {
+    setView("delivery");
+    return;
+  }
+
+  setView("home");
+}
+
+document.addEventListener("click", e => {
+  const route = e.target.closest("[data-route]");
+  if (route) {
+    routeTo(route.dataset.route);
+    return;
+  }
+
+  const category = e.target.closest("[data-category]");
+  if (category) {
+    openCategory(category.dataset.category);
+    return;
+  }
+
+  const product = e.target.closest("[data-product]");
+  if (product) {
+    openProduct(product.dataset.product);
+    return;
+  }
+
+  const add = e.target.closest("[data-add]");
+  if (add) {
+    addToCart(add.dataset.add);
+    return;
+  }
+
+  const detailAdd = e.target.closest("[data-detail-add]");
+  if (detailAdd) {
+    addToCart(detailAdd.dataset.detailAdd);
+    return;
+  }
+
+  const backCategory = e.target.closest("[data-back-category]");
+  if (backCategory) {
+    openCategory(backCategory.dataset.backCategory);
+  }
 });
 
 searchInput.addEventListener("input", renderProducts);
+
+productCategoryBack.addEventListener("click", () => {
+  if (currentCategory) openCategory(currentCategory);
+});
 
 cartItems.addEventListener("click", e => {
   const minus = e.target.closest("[data-minus]");
@@ -368,29 +532,29 @@ checkoutForm.addEventListener("submit", async e => {
 
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   const data = new FormData(checkoutForm);
-  const { total } = cartSummary();
+  const {total} = cartSummary();
 
   const orderProducts = Object.entries(cart)
     .map(([id, quantity]) => {
       const p = findProduct(id);
       if (!p) return null;
       return {
-        id: p.id,
-        name: p.name,
-        quantity: Number(quantity),
-        price: getProductPrice(p)
+        id:p.id,
+        name:p.name,
+        quantity:Number(quantity),
+        price:getProductPrice(p)
       };
     })
     .filter(Boolean);
 
   const payload = {
-    action: "order",
-    name: data.get("name"),
-    phone: data.get("phone"),
-    city: data.get("city"),
-    delivery: data.get("delivery"),
-    comment: data.get("comment"),
-    products: orderProducts,
+    action:"order",
+    name:data.get("name"),
+    phone:data.get("phone"),
+    city:data.get("city"),
+    delivery:data.get("delivery"),
+    comment:data.get("comment"),
+    products:orderProducts,
     total
   };
 
@@ -399,11 +563,9 @@ checkoutForm.addEventListener("submit", async e => {
 
   try {
     const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(payload)
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload)
     });
 
     if (!response.ok) throw new Error("Помилка відправлення");
@@ -416,11 +578,13 @@ checkoutForm.addEventListener("submit", async e => {
     renderCart();
     checkoutForm.reset();
     closeCheckoutModal();
-    showToast(result.orderNumber
-      ? `Замовлення ${result.orderNumber} оформлено ✓`
-      : "Замовлення оформлено ✓"
+
+    showToast(
+      result.orderNumber
+        ? `Замовлення ${result.orderNumber} оформлено ✓`
+        : "Замовлення оформлено ✓"
     );
-  } catch (error) {
+  } catch(error) {
     console.error(error);
     showToast("Не вдалося відправити замовлення");
   } finally {
@@ -428,6 +592,8 @@ checkoutForm.addEventListener("submit", async e => {
     submitButton.textContent = "Підтвердити замовлення";
   }
 });
+
+window.addEventListener("popstate", restoreRouteFromHash);
 
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
