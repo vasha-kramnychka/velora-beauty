@@ -375,3 +375,24 @@ a{color:inherit;text-decoration:none}
   -webkit-appearance:none;
   color:var(--text);
 }
+
+
+/* v4: catalog back button */
+.page-back-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.72);
+  color:var(--rose-dark);
+  border-radius:999px;
+  padding:10px 16px;
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:22px;
+  transition:.2s ease;
+}
+.page-back-btn:hover{
+  background:#fff;
+  transform:translateX(-2px);
+  box-shadow:0 8px 24px rgba(83,53,50,.08);
+}
