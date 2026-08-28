@@ -73,38 +73,7 @@
         </div>
       </div>
 
-      <div class="category-grid">
-        <button class="category-card" data-category="Обличчя" type="button">
-          <span class="category-icon">🫧</span>
-          <strong>Обличчя</strong>
-          <small>Очищення, креми, сироватки</small>
-        </button>
-        <button class="category-card" data-category="Макіяж" type="button">
-          <span class="category-icon">💄</span>
-          <strong>Макіяж</strong>
-          <small>Тон, губи, очі</small>
-        </button>
-        <button class="category-card" data-category="Волосся" type="button">
-          <span class="category-icon">🪮</span>
-          <strong>Волосся</strong>
-          <small>Шампуні, маски, догляд</small>
-        </button>
-        <button class="category-card" data-category="Тіло" type="button">
-          <span class="category-icon">🌿</span>
-          <strong>Тіло</strong>
-          <small>Креми, скраби, олії</small>
-        </button>
-        <button class="category-card" data-category="Парфуми" type="button">
-          <span class="category-icon">🌸</span>
-          <strong>Парфуми</strong>
-          <small>Аромати на кожен день</small>
-        </button>
-        <button class="category-card" data-category="Набори" type="button">
-          <span class="category-icon">🎁</span>
-          <strong>Набори</strong>
-          <small>Готові beauty-подарунки</small>
-        </button>
-      </div>
+      <div class="category-grid" id="categoryGrid"></div>
     </section>
 
     <section class="section catalog-section" id="catalog">
@@ -120,18 +89,10 @@
           </div>
         </div>
 
-        <div class="filters" id="filters">
-          <button class="filter active" type="button" data-filter="Усі">Усі</button>
-          <button class="filter" type="button" data-filter="Обличчя">Обличчя</button>
-          <button class="filter" type="button" data-filter="Макіяж">Макіяж</button>
-          <button class="filter" type="button" data-filter="Волосся">Волосся</button>
-          <button class="filter" type="button" data-filter="Тіло">Тіло</button>
-          <button class="filter" type="button" data-filter="Парфуми">Парфуми</button>
-          <button class="filter" type="button" data-filter="Набори">Набори</button>
-        </div>
+        <div class="filters" id="filters"></div>
 
         <div class="product-grid" id="productGrid"></div>
-        <p class="empty-state" id="emptyState" hidden>Нічого не знайдено. Спробуйте інший запит.</p>
+        <p class="empty-state" id="emptyState">Завантажуємо каталог…</p>
       </div>
     </section>
 
